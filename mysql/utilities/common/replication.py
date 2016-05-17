@@ -544,8 +544,7 @@ class Replication(object):
         ssl = False
         if self.ssl:
             ssl = True
-        return self.master.create_rpl_user(self.slave.host, self.slave.port,
-                                           r_user, r_pass, self.verbosity, ssl)
+        return self.master.create_rpl_user(r_user, r_pass, self.verbosity, ssl)
 
     def setup(self, rpl_user, num_tries):
         """Setup replication among a slave and master.
@@ -745,9 +744,9 @@ class Replication(object):
 
 
 class Master(Server):
-    """The Slave class is a subclass of the Server class. It represents a
-    MySQL server performing the role of a slave in a replication topology.
-    The following utilities are provide in addition to the Server utilities:
+    """The Master class is a subclass of the Server class. It represents a
+    MySQL server performing the role of a master in a replication topology.
+    The following utilities are provided in addition to the Server utilities:
 
         - check to see if replication user is defined and has privileges
         - get binary log exceptions
@@ -839,14 +838,12 @@ class Master(Server):
             query = _RPL_USER_QUERY
         return self.exec_query(query, options)
 
-    def create_rpl_user(self, host, port, r_user, r_pass=None, verbosity=0,
+    def create_rpl_user(self, r_user, r_pass=None, verbosity=0,
                         ssl=False):
         """Create the replication user and grant privileges
 
         If the user exists, check privileges and add privileges as needed.
 
-        host[in]       host of the slave
-        port[in]       port of the slave
         r_user[in]     user to create
         r_pass[in]     password for user to create (optional)
         verbosity[in]  verbosity of output
@@ -862,11 +859,8 @@ class Master(Server):
         if not grants_enabled:
             return (True, None)
 
-        if "]" in host:
-            host = clean_IPv6(host)
-
         # Create user class instance
-        user = User(self, "%s:%s@%s:%s" % (r_user, r_pass, host, port))
+        user = User(self, "%s:%s@%s" % (r_user, r_pass, '%'))
         if not user.exists():
             user.create()
 
@@ -874,7 +868,7 @@ class Master(Server):
             if verbosity > 0:
                 print "# Granting replication access to replication user..."
             query_str = "GRANT REPLICATION SLAVE ON *.* TO '%s'@'%s' " % \
-                        (r_user, host)
+                        (r_user, '%')
             if r_pass:
                 query_str += "IDENTIFIED BY '%s'" % r_pass
 

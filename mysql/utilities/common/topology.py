@@ -538,8 +538,7 @@ class Topology(Replication):
             # Create replication user if --force is specified.
             if self.force and candidate_ok[1] == "RPL_USER":
                 user, passwd = slave.get_rpl_user()
-                res = candidate.create_rpl_user(slave.host, slave.port,
-                                                user, passwd, self.ssl)
+                res = candidate.create_rpl_user(user, passwd, self.ssl)
                 if not res[0]:
                     print("# ERROR: {0}".format(res[1]))
                     self._report(res[1], logging.CRITICAL, False)
@@ -1831,9 +1830,7 @@ class Topology(Replication):
 
         if self.verbose:
             self._report("# Creating replication user if it does not exist.")
-        res = m_candidate.create_rpl_user(m_candidate.host,
-                                          m_candidate.port,
-                                          user, passwd, ssl=self.ssl)
+        res = m_candidate.create_rpl_user(user, passwd, ssl=self.ssl)
         if not res[0]:
             print("# ERROR: {0}".format(res[1]))
             self._report(res[1], logging.CRITICAL, False)
@@ -2183,7 +2180,7 @@ class Topology(Replication):
 
         # Need Master class instance to check master and replication user
         self.master = self._change_role(new_master, False)
-        res = self.master.create_rpl_user(host, port, user, passwd,
+        res = self.master.create_rpl_user(user, passwd,
                                           ssl=self.ssl)
         if not res[0]:
             print("# ERROR: {0}".format(res[1]))
