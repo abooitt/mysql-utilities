@@ -18,10 +18,10 @@
 """mysql.utilities"""
 
 # Major, Minor, Patch, Status
-VERSION = (1, 6, 2, 'Beta', 0)
+VERSION = (1, 6, 3, 'ECG', 0)
 # Future versions will have to include only the X, Y (no Z).
 
-VERSION_STRING = "%s.%s.%s" % VERSION[0:3]
+VERSION_STRING = "%s.%s.%s.%s" % VERSION[0:4]
 
 COPYRIGHT = "2010, 2015 Oracle and/or its affiliates. All rights reserved."
 
